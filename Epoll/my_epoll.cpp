@@ -3,8 +3,8 @@
 #include <arpa/inet.h>
 #include <sys/epoll.h>
 #include <sys/types.h>
-#include<errno.h>
-#include<fcntl.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -12,11 +12,12 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include<iostream> 
+#include <iostream> 
 
 
 using namespace std;
 epoll_event ev;
+
 
 Epoll::Epoll(int BUF_LEN, int MAX_EVENTS) {
 	m_mesg_get = new char[BUF_LEN];
@@ -28,6 +29,7 @@ Epoll::Epoll(int BUF_LEN, int MAX_EVENTS) {
 		exit(-1);
 	}
 }
+
 
 int  Epoll::Socket(int port, char* ip) {
 	int sd = socket(AF_INET, SOCK_STREAM, 0);
@@ -54,16 +56,19 @@ int  Epoll::Socket(int port, char* ip) {
 	return sd;
 }
 
+
 void Epoll::server_ctl(int server_sd) {
 	ev.data.fd = server_sd;
 	ev.events = EPOLLIN;
 	epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, server_sd, &ev);
 }
 
+
 int Epoll::get_ready_fds() {
 	int ready_fds = epoll_wait(m_epoll_fd, m_events, sizeof(m_events), -1);
 	return ready_fds;
 }
+
 
 const char* Epoll::match_event(int i) {
 	const char* variable;
@@ -80,6 +85,7 @@ const char* Epoll::match_event(int i) {
 		return variable;
 	}
 }
+
 
 void Epoll::process_event(int e, int i) {
 	int client_sd;
@@ -105,12 +111,12 @@ void Epoll::process_event(int e, int i) {
 		epoll_ctl(m_epoll_fd, EPOLL_CTL_MOD, client_sd, &ev);
 	}
 }
+
+
 void Epoll::m_close() {
 	close(m_server_sd);
 	close(m_epoll_fd);
 }
-
-
 
 
 int main(int argc, char* argv[]) {
